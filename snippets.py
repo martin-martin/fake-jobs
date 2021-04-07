@@ -40,8 +40,9 @@ job_html = """<div class="card" style="width: 18rem;">
 <h2 class="title"><a data-bypass="true">{0}</a></h2>
 </header>
 <div class="card-body">
+<div class="badge bg-light rounded-pill text-dark"><time datetime="{3}">{3}</time></div>
 <div class="company">
-<span class="name">{1}</span>
+<span class="name fs-3">{1}</span>
 <ul class="list-inline">
 </ul>
 </div>
@@ -51,10 +52,9 @@ job_html = """<div class="card" style="width: 18rem;">
 </span>
 </div>
 </div>
-<div><time datetime="{3}">{3}</time></div>
 <div class="btn-group" role="group" aria-label="Basic example">
-  <button type="button" class="btn btn-success">Apply</button>
-  <button type="button" class="btn btn-primary">Save</button>
+  <button type="button" class="btn btn-success btn-outline">Apply</button>
+  <button type="button" class="btn btn-primary btn-outline">Save</button>
 </div>
 </div>
 </div>
