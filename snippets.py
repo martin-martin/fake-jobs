@@ -62,3 +62,96 @@ job_html = """<div class="card" style="width: 18rem;">
 </div>
 </div>
 """
+
+page_html = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <title>Fake Python Jobs</title>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Fake Python Jobs</a>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" target="_blank" aria-current="page" href="https://www.realpython.com">Real Python</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+</nav>
+
+<div class="container">
+    {}
+</div>
+</body>
+</html>
+"""
+
+bulma_html = """<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fake Python</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+  </head>
+  <body>
+  <section class="section">
+    <div class="container mb-5">
+      <h1 class="title is-1">
+        Fake Python
+      </h1>
+      <p class="subtitle is-3">
+        Fake Jobs for Your Web Scraping Journey
+      </p>
+    </div>
+    <div class="container">
+    <div class="columns is-multiline">
+    {}
+    </div>
+    </div>
+  </section>
+  </body>
+</html>
+"""
+
+bulma_job = """<div class="column is-half">
+<div class="card">
+  <div class="card-content">
+    <div class="media">
+      <div class="media-left">
+        <figure class="image is-48x48">
+          <img src="https://files.realpython.com/media/real-python-logo-thumbnail.7f0db70c2ed2.jpg?__no_cf_polish=1" alt="Real Python Logo">
+        </figure>
+      </div>
+      <div class="media-content">
+        <p class="title is-5">{0}</p>
+        <p class="subtitle is-6">{1}</p>
+      </div>
+    </div>
+
+    <div class="content">
+      <p>
+        {2}
+      </p>
+      <p class="is-small has-text-grey">
+        <time datetime="{3}">{3}</time>
+      </p>
+    </div>
+    <footer class="card-footer">
+        <a href="https://www.realpython.com" target="_blank" class="card-footer-item">Learn</a>
+        <a href="{4}" target="_blank" class="card-footer-item">Apply</a>
+    </footer>
+  </div>
+</div>
+</div>
+"""
