@@ -155,3 +155,14 @@ bulma_job = """<div class="column is-half">
 </div>
 </div>
 """
+
+job_detail_html = """<div class="box">
+<h1 class="title is-2">{0}</h1>
+<h2 class="subtitle is-4">{1}</h2>
+<div class="content">
+    <p>{4}</p>
+    <p><strong>Location:</strong> {2}</p>
+    <p><strong>Posted:</strong> {3}</p>
+</div>
+</div>
+"""
