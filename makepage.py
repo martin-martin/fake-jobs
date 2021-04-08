@@ -24,13 +24,13 @@ for i in range(1000):
     if "engineer" in job.lower():
         # job_html.format(job_title, company_name, location, time)
         description = fake.paragraph(nb_sentences=randint(5, 10), ext_word_list=word_list)
-        slug_url = f"{slugify(job)}-{i}"
+        slug_url = f"{slugify(job)}-{i}.html"
         company = fake.company()
         location = f"{fake.city()}, {fake.military_state()}"
         date = fake.date()
         jobs_list += bulma_job.format(job, company, location, date,
                                       f"{BASE_URL}/jobs/{slug_url}")
-        with open(job_loc.joinpath(f"{slug_url}.html"), "w") as detailpage:
+        with open(job_loc.joinpath(slug_url), "w") as detailpage:
             details = job_detail_html.format(job, company, location, date, description)
             detailpage.write(bulma_html.format(details))
 
