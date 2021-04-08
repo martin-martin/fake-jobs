@@ -115,7 +115,7 @@ bulma_html = """<!DOCTYPE html>
       </p>
     </div>
     <div class="container">
-    <div class="columns is-multiline">
+    <div id="ResultsContainer" class="columns is-multiline">
     {}
     </div>
     </div>
@@ -135,12 +135,12 @@ bulma_job = """<div class="column is-half">
       </div>
       <div class="media-content">
         <p class="title is-5">{0}</p>
-        <p class="subtitle is-6">{1}</p>
+        <p class="subtitle is-6 company">{1}</p>
       </div>
     </div>
 
     <div class="content">
-      <p>
+      <p class="location">
         {2}
       </p>
       <p class="is-small has-text-grey">
@@ -158,11 +158,11 @@ bulma_job = """<div class="column is-half">
 
 job_detail_html = """<div class="box">
 <h1 class="title is-2">{0}</h1>
-<h2 class="subtitle is-4">{1}</h2>
+<h2 class="subtitle is-4 company">{1}</h2>
 <div class="content">
     <p>{4}</p>
-    <p><strong>Location:</strong> {2}</p>
-    <p><strong>Posted:</strong> {3}</p>
+    <p id="location"><strong>Location:</strong> {2}</p>
+    <p id="date"><strong>Posted:</strong> {3}</p>
 </div>
 </div>
 """
