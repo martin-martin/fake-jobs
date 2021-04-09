@@ -52,9 +52,9 @@ However, APIs *can* change as well. Both the challenges of variety and durabilit
 
 The approach and tools you need to gather information using APIs are outside the scope of this tutorial. To learn more about it, check out [API Integration in Python](https://realpython.com/api-integration-in-python/).
 
-## Scraping the Monster Job Site
-
-In this tutorial, you'll build a web scraper that fetches Software Developer job listings from the [Monster](https://www.monster.com/jobs/search/?q=Software-Developer) job aggregator site. Your web scraper will parse the HTML to pick out the relevant pieces of information and filter that content for specific words.
+## Scraping the Fake Python Job Site
+<!-- TODO: Add the right link once the site is live on a realpython domain -->
+In this tutorial, you'll build a web scraper that fetches Python Software Developer job listings from the [Fake Python Jobs](https://martin-martin.github.io/fake-jobs/) site. This is an example site with fake job postings that you can freely scrape to train your skills. Your web scraper will parse the HTML on the site to pick out the relevant pieces of information and filter that content for specific words.
 
 You can scrape any site on the Internet that you can look at, but the difficulty of doing so depends on the site. This tutorial offers you an introduction to web scraping to help you understand the overall process. Then, you can apply this same process for every website you'll want to scrape.
 
@@ -64,49 +64,66 @@ The first step is to head over to the site you want to scrape using your favorit
 
 ### Explore the Website
 
-Click through the site and interact with it just like any normal user would. For example, you could search for Software Developer jobs in Australia using the site's native search interface:
+Click through the site and interact with it just like any normal user would. For example, you can scroll through the main page of the website:
 
-{% img 'monster-search-result' centered=True border=True class='w-66' %}
+![main page](imgs/fake_python_index.png)
+<!-- TODO: replace with screenshot -->
+<!-- {% img 'monster-search-result' centered=True border=True class='w-66' %} -->
 
-You can see that there's a list of jobs returned on the left side, and there are more detailed descriptions about the selected job on the right side. When you click on any of the jobs on the left, the content on the right changes. You can also see that when you interact with the website, the URL in your browser's address bar also changes.
+You can see a lot of job postings in a card format, and each of them has two buttons. If you click on the _Apply_ button, you'll see a new page that contains more detailed descriptions about the selected job. You might also notice that the URL in your browser's address bar changes when you interact with the website.
 
 ### Decipher the Information in URLs
 
-A lot of information can be encoded in a URL. Your web scraping journey will be much easier if you first become familiar with how URLs work and what they're made of. Try to pick apart the URL of the site you're currently on:
+A lot of information can be encoded in a URL. Your web scraping journey will be much easier if you first become familiar with how URLs work and what they're made of. For example, you might find yourself on a detail page that has the following URL:
 
+<!-- TODO: replace with real link -->
 ```text
-https://www.monster.com/jobs/search/?q=Software-Developer&where=Australia
+https://martin-martin.github.io/fake-jobs/jobs/senior-python-developer-0.html
 ```
 
 You can deconstruct the above URL into two main parts:
 
-1. **The base URL** represents the path to the search functionality of the website. In the example above, the base URL is `https://www.monster.com/jobs/search/`.
-2. **The query parameters** represent additional values that can be declared on the page. In the example above, the query parameters are `?q=Software-Developer&where=Australia`.
+1. **The base URL** represents the path to the search functionality of the website. In 
+<!-- TODO: replace link -->
+the example above, the base URL is `https://martin-martin.github.io/fake-jobs/`.
+2. **The specific site location** that ends with `.html` is the path to the individual resource where the job description is posted.
 
-Any job you'll search for on this website will use the same base URL. However, the query parameters will change depending on what you're looking for. You can think of them as query strings that get sent to the database to retrieve specific records.
+Any job you'll on this website will use the same base URL. However, the location of the individual resources will change depending on what job you're looking at.
 
-Query parameters generally consist of three things:
+URLs can hold even more information than the location of a file. Some websites use **query parameters** to encode values that you might enter when searching for a specific job. You can think of them as query strings that get sent to the database to retrieve specific records. Query parameters will follow at the end of the URL. For example, if you make a search for _Software Developer_ in _Australia_ on [indeed.com](https://au.indeed.com), you'll see that the URL includes these values as query parameters:
+
+```text
+https://au.indeed.com/jobs?q=software+developer&l=Australia
+```
+
+The query parameters in this URL are `?q=software+developer&l=Australia`. They generally consist of three parts:
 
 1. **Start:** The beginning of the query parameters is denoted by a question mark (`?`).
 2. **Information:** The pieces of information constituting one query parameter are encoded in key-value pairs, where related keys and values are joined together by an equals sign (`key=value`).
-3. **Separator:** Every URL can have multiple query parameters, which are separated from each other by an ampersand (`&`).
+3. **Separator:** Every URL can have multiple query parameters, which are separated from each other by an ampersand symbol (`&`).
 
 Equipped with this information, you can pick apart the URL's query parameters into two key-value pairs:
 
-1. **`q=Software-Developer`** selects the type of job you're looking for.
-2. **`where=Australia`** selects the location you're looking for.
+1. **`q=software+developer`** selects the type of job you're looking for.
+2. **`l=Australia`** selects the location you're looking for.
 
 Try to change the search parameters and observe how that affects your URL. Go ahead and enter new values in the search bar up top:
 
+<!-- TODO: replace images -->
 {% img 'monster-search-bar-filled' centered=True  border=True zoom=False caption="Change these values to observe the changes in the URL." %}
 
 Next, try to change the values directly in your URL. See what happens when you paste the following URL into your browser's address bar:
 
 ```text
-https://www.monster.com/jobs/search/?q=Programmer&where=New-York
+https://au.indeed.com/jobs?q=programmer&l=adelaide
 ```
 
-You'll notice that changes in the search box of the site are directly reflected in the URL's query parameters and vice versa. If you change either of them, then you'll see different results on the website. When you explore URLs, you can get information on how to retrieve data from the website's server.
+You'll notice that changes in the search box of the site are directly reflected in the URL's query parameters and vice versa. If you change either of them, then you'll see different results on the website.
+
+As you can see, exploring the URLs of a site can give you insight on how to retrieve data from the website's server.
+
+<!-- TODO: change URL -->
+Head back to [Fake Python Jobs](https://martin-martin.github.io/fake-jobs/) and continue to explore the option on this site. This site is a purely static website that doesn't operate on top of a database, which is why you won't have to work with query parameters in this scraping exercise.
 
 ### Inspect the Site Using Developer Tools
 
@@ -118,6 +135,7 @@ In Chrome, you can open up the developer tools through the menu *View → Develo
 
 Developer tools allow you to interactively explore the site's [DOM](https://en.wikipedia.org/wiki/Document_Object_Model) to better understand the source that you're working with. To dig into your page's DOM, select the *Elements* tab in developer tools. You'll see a structure with clickable HTML elements. You can expand, collapse, and even edit elements right in your browser:
 
+<!-- TODO: Replace image -->
 {% img 'chrome-developer-tools' centered=True class='w-66' border=True caption="The HTML on the right represents the structure of the page you can see on the left." %}
 
 You can think of the text displayed in your browser as the HTML structure of that page. If you're interested, then you can read more about the difference between the DOM and HTML on [CSS-TRICKS](https://css-tricks.com/dom/).
@@ -135,7 +153,7 @@ Play around and explore! The more you get to know the page you're working with, 
 Now that you have an idea of what you're working with, it's time to get started using Python. First, you'll want to get the site's HTML code into your Python script so that you can interact with it. For this task, you'll use Python's [`requests`](https://realpython.com/python-requests/) library. Type the following in your terminal to install it:
 
 ```console
-$ pip3 install requests
+$ python3 -m pip install requests
 ```
 
 Then open up a new file in your favorite [text editor](https://realpython.com/python-ides-code-editors-guide/). All you need to retrieve the HTML are a few lines of code:
@@ -153,43 +171,40 @@ If you take a look at the downloaded content, then you'll notice that it looks v
 
 ### Static Websites
 
-The website you're scraping in this tutorial serves **static HTML content**. In this scenario, the server that hosts the site sends back HTML documents that already contain all the data you'll get to see as a user.
+The website you're scraping in this tutorial serves **static HTML content**. In this scenario, the server that hosts the site sends back HTML documents that already contain all the data that you'll get to see as a user.
 
 When you inspected the page with developer tools earlier on, you discovered that a job posting consists of the following long and messy-looking HTML:
 
+<!-- TODO: Update links -->
 ```html
-<section class="card-content" data-jobid="4755ec59-d0db-4ce9-8385-b4df7c1e9f7c" onclick="MKImpressionTrackingMouseDownHijack(this, event)">
-<div class="flex-row">
-<div class="mux-company-logo thumbnail"></div>
-<div class="summary">
-<header class="card-header">
-<h2 class="title"><a data-bypass="true" data-m_impr_a_placement_id="JSR2CW" data-m_impr_j_cid="4" data-m_impr_j_coc="" data-m_impr_j_jawsid="371676273" data-m_impr_j_jobid="0" data-m_impr_j_jpm="2" data-m_impr_j_jpt="3" data-m_impr_j_lat="30.1882" data-m_impr_j_lid="619" data-m_impr_j_long="-95.6732" data-m_impr_j_occid="11838" data-m_impr_j_p="3" data-m_impr_j_postingid="4755ec59-d0db-4ce9-8385-b4df7c1e9f7c" data-m_impr_j_pvc="4496dab8-a60c-4f02-a2d1-6213320e7213" data-m_impr_s_t="t" data-m_impr_uuid="0b620778-73c7-4550-9db5-df4efad23538" href="https://job-openings.monster.com/python-developer-woodlands-wa-us-lancesoft-inc/4755ec59-d0db-4ce9-8385-b4df7c1e9f7c" onclick="clickJobTitle('plid=619&amp;pcid=4&amp;poccid=11838','Software Developer',''); clickJobTitleSiteCat('{&quot;events.event48&quot;:&quot;true&quot;,&quot;eVar25&quot;:&quot;Python Developer&quot;,&quot;eVar66&quot;:&quot;Monster&quot;,&quot;eVar67&quot;:&quot;JSR2CW&quot;,&quot;eVar26&quot;:&quot;_LanceSoft Inc&quot;,&quot;eVar31&quot;:&quot;Woodlands_WA_&quot;,&quot;prop24&quot;:&quot;2019-07-02T12:00&quot;,&quot;eVar53&quot;:&quot;1500127001001&quot;,&quot;eVar50&quot;:&quot;Aggregated&quot;,&quot;eVar74&quot;:&quot;regular&quot;}')">Python Developer
-</a></h2>
-</header>
-<div class="company">
-<span class="name">LanceSoft Inc</span>
-<ul class="list-inline">
-</ul>
+<div class="card">
+  <div class="card-content">
+    <div class="media">
+      <div class="media-left">
+        <figure class="image is-48x48">
+          <img src="https://files.realpython.com/media/real-python-logo-thumbnail.7f0db70c2ed2.jpg?__no_cf_polish=1" alt="Real Python Logo">
+        </figure>
+      </div>
+      <div class="media-content">
+        <h2 class="title is-5">Senior Python Developer</h2>
+        <h3 class="subtitle is-6 company">Payne, Roberts and Davis</h3>
+      </div>
+    </div>
+
+    <div class="content">
+      <p class="location">
+        Stewartbury, AA
+      </p>
+      <p class="is-small has-text-grey">
+        <time datetime="2021-04-08">2021-04-08</time>
+      </p>
+    </div>
+    <footer class="card-footer">
+        <a href="https://www.realpython.com" target="_blank" class="card-footer-item">Learn</a>
+        <a href="https://martin-martin.github.io/fake-jobs/jobs/senior-python-developer-0.html" target="_blank" class="card-footer-item">Apply</a>
+    </footer>
+  </div>
 </div>
-<div class="location">
-<span class="name">
-Woodlands, WA
-</span>
-</div>
-</div>
-<div class="meta flex-col">
-<time datetime="2017-05-26T12:00">2 days ago</time>
-<span class="mux-tooltip applied-only" data-mux="tooltip" title="Applied">
-<i aria-hidden="true" class="icon icon-applied"></i>
-<span class="sr-only">Applied</span>
-</span>
-<span class="mux-tooltip saved-only" data-mux="tooltip" title="Saved">
-<i aria-hidden="true" class="icon icon-saved"></i>
-<span class="sr-only">Saved</span>
-</span>
-</div>
-</div>
-</section>
 ```
 
 It can be difficult to wrap your head around such a long block of HTML code. To make it easier to read, you can use an [HTML formatter](https://htmlformatter.com/) to automatically clean it up a little more. Good readability helps you better understand the structure of any code block. While it may or may not help to improve the formatting of the HTML, it's always worth a try.
@@ -198,10 +213,10 @@ It can be difficult to wrap your head around such a long block of HTML code. To 
 **Note:** Keep in mind that every website will look different. That's why it's necessary to inspect and understand the structure of the site you're currently working with before moving forward.
 {% endalert %}
 
-The HTML above definitely has a few confusing parts in it. For example, you can scroll to the right to see the large number of attributes that the `<a>` element has. Luckily, the **class names** on the elements that you're interested in are relatively straightforward:
+The HTML you'll encounter will sometimes be confusing. Luckily, the HTML you're working with in this tutorial has descriptive **class names** on the elements that you're interested in:
 
-- **`class="title"`**: the title of the job posting
-- **`class="company"`**: the company that offers the position
+- **`class="title is-5"`**: the title of the job posting
+- **`class="subtitle is-6 company"`**: the company that offers the position
 - **`class="location"`**: the location where you'd be working
 
 In case you ever get lost in a large pile of HTML, remember that you can always go back to your browser and use developer tools to further explore the HTML structure interactively.
@@ -245,16 +260,16 @@ You've successfully scraped some HTML from the Internet, but when you look at it
 [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) is a Python library for **parsing structured data**. It allows you to interact with HTML in a similar way to how you would interact with a web page using developer tools. Beautiful Soup exposes a couple of intuitive functions you can use to explore the HTML you received. To get started, use your terminal to install the Beautiful Soup library:
 
 ```console
-$ pip3 install beautifulsoup4
+$ python3 -m pip install beautifulsoup4
 ```
 
 Then, import the library and create a Beautiful Soup object:
-
+<!-- TODO: Update URL -->
 ```python hl_lines="2 7"
 import requests
 from bs4 import BeautifulSoup
 
-URL = 'https://www.monster.com/jobs/search/?q=Software-Developer&where=Australia'
+URL = 'https://martin-martin.github.io/fake-jobs/'
 page = requests.get(URL)
 
 soup = BeautifulSoup(page.content, 'html.parser')
@@ -296,10 +311,10 @@ When you use the element's ID, you're able to pick one element out from among th
 
 ### Find Elements by HTML Class Name
 
-You've seen that every job posting is wrapped in a `<section>` element with the class `card-content`. Now you can work with your new Beautiful Soup object called `results` and select only the job postings. These are, after all, the parts of the HTML that you're interested in! You can do this in one line of code:
+You've seen that every job posting is wrapped in a `<div>` element with the class `card-content`. Now you can work with your new Beautiful Soup object called `results` and select only the job postings. These are, after all, the parts of the HTML that you're interested in! You can do this in one line of code:
 
 ```python
-job_elems = results.find_all('section', class_='card-content')
+job_elems = results.find_all('div', class_='card-content')
 ```
 
 Here, you call `.find_all()` on a Beautiful Soup object, which returns an [iterable](https://realpython.com/courses/python-for-loop/) containing all the HTML for all the job listings displayed on that page.
@@ -318,8 +333,8 @@ for job_elem in job_elems:
     # Each job_elem is a new BeautifulSoup object.
     # You can use the same methods on it as you did before.
     title_elem = job_elem.find('h2', class_='title')
-    company_elem = job_elem.find('div', class_='company')
-    location_elem = job_elem.find('div', class_='location')
+    company_elem = job_elem.find('h3', class_='company')
+    location_elem = job_elem.find('p', class_='location')
     print(title_elem)
     print(company_elem)
     print(location_elem)
@@ -329,18 +344,11 @@ for job_elem in job_elems:
 Great! You're getting closer and closer to the data you're actually interested in. Still, there's a lot going on with all those HTML tags and attributes floating around:
 
 ```html
-<h2 class="title"><a data-bypass="true" data-m_impr_a_placement_id="JSR2CW" data-m_impr_j_cid="4" data-m_impr_j_coc="" data-m_impr_j_jawsid="371676273" data-m_impr_j_jobid="0" data-m_impr_j_jpm="2" data-m_impr_j_jpt="3" data-m_impr_j_lat="30.1882" data-m_impr_j_lid="619" data-m_impr_j_long="-95.6732" data-m_impr_j_occid="11838" data-m_impr_j_p="3" data-m_impr_j_postingid="4755ec59-d0db-4ce9-8385-b4df7c1e9f7c" data-m_impr_j_pvc="4496dab8-a60c-4f02-a2d1-6213320e7213" data-m_impr_s_t="t" data-m_impr_uuid="0b620778-73c7-4550-9db5-df4efad23538" href="https://job-openings.monster.com/python-developer-woodlands-wa-us-lancesoft-inc/4755ec59-d0db-4ce9-8385-b4df7c1e9f7c" onclick="clickJobTitle('plid=619&amp;pcid=4&amp;poccid=11838','Software Developer',''); clickJobTitleSiteCat('{&quot;events.event48&quot;:&quot;true&quot;,&quot;eVar25&quot;:&quot;Python Developer&quot;,&quot;eVar66&quot;:&quot;Monster&quot;,&quot;eVar67&quot;:&quot;JSR2CW&quot;,&quot;eVar26&quot;:&quot;_LanceSoft Inc&quot;,&quot;eVar31&quot;:&quot;Woodlands_WA_&quot;,&quot;prop24&quot;:&quot;2019-07-02T12:00&quot;,&quot;eVar53&quot;:&quot;1500127001001&quot;,&quot;eVar50&quot;:&quot;Aggregated&quot;,&quot;eVar74&quot;:&quot;regular&quot;}')">Python Developer
-</a></h2>
-<div class="company">
-<span class="name">LanceSoft Inc</span>
-<ul class="list-inline">
-</ul>
-</div>
-<div class="location">
-<span class="name">
-Woodlands, WA
-</span>
-</div>
+<h2 class="title is-5">Senior Python Developer</h2>
+<h3 class="subtitle is-6 company">Payne, Roberts and Davis</h3>
+<p class="location">
+        Stewartbury, AA
+      </p>
 ```
 
 You'll see how to narrow down this output in the next section.
@@ -352,61 +360,44 @@ For now, you only want to see the title, company, and location of each job posti
 ```python hl_lines="5 6 7"
 for job_elem in job_elems:
     title_elem = job_elem.find('h2', class_='title')
-    company_elem = job_elem.find('div', class_='company')
-    location_elem = job_elem.find('div', class_='location')
+    company_elem = job_elem.find('h3', class_='company')
+    location_elem = job_elem.find('p', class_='location')
     print(title_elem.text)
     print(company_elem.text)
     print(location_elem.text)
     print()
 ```
 
-Run the above code snippet and you'll see the text content displayed. However, you'll also get a lot of [whitespace](https://realpython.com/lessons/whitespace-expressions-and-statements/). Since you're now working with [Python strings](https://realpython.com/python-strings/), you can `.strip()` the superfluous whitespace. You can also apply any other familiar Python string methods to further clean up your text.
+Run the above code snippet and you'll see the text content displayed. However, you might also get some extra [whitespace](https://realpython.com/lessons/whitespace-expressions-and-statements/). Since you're now working with [Python strings](https://realpython.com/python-strings/), you can `.strip()` the superfluous whitespace. You can also apply any other familiar Python string methods to further clean up your text.
 
 {% alert %}
 **Note:** The web is messy and you can't rely on a page structure to be consistent throughout. Therefore, you'll more often than not run into errors while parsing HTML.
 {% endalert %}
 
-When you run the above code, you might encounter an `AttributeError`:
-
-```console
-AttributeError: 'NoneType' object has no attribute 'text'
-```
-
-If that's the case, then take a step back and inspect your previous results. Were there any items with a value of `None`? You might have noticed that the structure of the page is not entirely uniform. There could be an advertisement in there that displays in a different way than the normal job postings, which may return different results. For this tutorial, you can safely disregard the problematic element and skip over it while parsing the HTML:
-
-```python hl_lines="5 6"
-for job_elem in job_elems:
-    title_elem = job_elem.find('h2', class_='title')
-    company_elem = job_elem.find('div', class_='company')
-    location_elem = job_elem.find('div', class_='location')
-    if None in (title_elem, company_elem, location_elem):
-        continue
-    print(title_elem.text.strip())
-    print(company_elem.text.strip())
-    print(location_elem.text.strip())
-    print()
-```
-
-Feel free to explore why one of the elements is returned as `None`. You can use the conditional statement you wrote above to `print()` out and inspect the relevant element in more detail. What do you think is going on there?
-
 After you complete the above steps try running your script again. The results finally look much better:
 
 ```text
-Python Developer
-LanceSoft Inc
-Woodlands, WA
+Senior Python Developer
+Payne, Roberts and Davis
+Stewartbury, AA
 
-Senior Engagement Manager
-Zuora
-Sydney, NSW
+Energy engineer
+Vasquez-Davidson
+Christopherville, AA
+
+Legal executive
+Jackson, Chambers and Levy
+Port Ericaburgh, AA
 ```
+
+That's a readable list of jobs that also includes the company name and the location of each job. However, you're looking for a position as a software developer, and not all of these job postings are in that field.
 
 ### Find Elements by Class Name and Text Content
 
-By now, you've cleaned up the list of jobs that you saw on the website. While that's pretty neat already, you can make your script more useful. However, not all of the job listings seem to be developer jobs that you'd be interested in as a Python developer. So instead of printing out all of the jobs from the page, you'll first filter them for some keywords.
+Not all of the job listings are developer jobs that you'd be interested in as a Python developer. So instead of printing out all of the jobs from the page, you'll first filter them using keywords.
 
 You know that job titles in the page are kept within `<h2>` elements. To filter only for
-specific ones, you can use the [`string` argument](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#the-string-argument):
+specific jobs, you can use the [`string` argument](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#the-string-argument):
 
 ```python
 python_jobs = results.find_all('h2', string='Python Developer')
@@ -418,7 +409,7 @@ This code finds all `<h2>` elements where the contained string matches `'Python 
 []
 ```
 
-There was definitely a job with that title in the search results, so why is it not showing up? When you use `string=` like you did above, your program looks for _exactly_ that string. Any differences in capitalization or whitespace will prevent the element from matching. In the next section, you'll find a way to make the string more general.
+There was definitely a Python job in the search results, so why is it not showing up? When you use `string=` like you did above, your program looks for _exactly_ that string. Any differences in capitalization or whitespace will prevent the element from matching. In the next section, you'll find a way to make your search string more general.
 
 #### Pass a Function to a Beautiful Soup Method
 
@@ -429,54 +420,154 @@ python_jobs = results.find_all('h2',
                                string=lambda text: 'python' in text.lower())
 ```
 
-Now you're passing an **anonymous function** to the `string=` argument. The [lambda function](https://realpython.com/python-lambda/) looks at the text of each `<h2>` element, converts it to lowercase, and checks whether the substring `'python'` is found anywhere in there. Now you've got a match:
+Now you're passing an **anonymous function** to the `string=` argument. The [lambda function](https://realpython.com/python-lambda/) looks at the text of each `<h2>` element, converts it to lowercase, and checks whether the substring `'python'` is found anywhere in there. You can check whether you managed to identify the Python jobs:
 
 ```pycon
 >>> print(len(python_jobs))
-1
+10
 ```
 
-Your program has found a match!
-
-{% alert %}
-**Note:** In case you still don't get a match, try adapting your search string. The job offers on this page are constantly changing and there might not be a job listed that includes the substring `'python'` in its title at the time that you're working through this tutorial.
-{% endalert %}
+Your program has found `10` matching job posts that include the word `"python"` in their job title!
 
 The process of finding specific elements depending on their text content is a powerful way to filter your HTML response for the information that you're looking for. Beautiful Soup allows you to use either exact strings or functions as arguments for filtering text in Beautiful Soup objects.
 
-### Extract Attributes From HTML Elements
+However, when you try to run your scraper to print out the information of the filtered Python jobs, you'll run into an error:
 
-At this point, your Python script already scrapes the site and filters its HTML for relevant job postings. Well done! However, one thing that's still missing is the link to apply for a job.
-
-While you were inspecting the page, you found that the link is part of the element that has the `title` HTML class. The current code strips away the entire link when accessing the `.text` attribute of its parent element. As you've seen before, `.text` only contains the visible text content of an HTML element. Tags and attributes are not part of that. To get the actual URL, you want to **extract** one of those attributes instead of discarding it.
-
-Look at the list of filtered results `python_jobs` that you created above. The URL is contained in the `href` attribute of the nested `<a>` tag. Start by fetching the `<a>` element. Then, extract the value of its `href` attribute using square-bracket notation:
-
-```python hl_lines="5"
-python_jobs = results.find_all('h2',
-                               string=lambda text: "python" in text.lower())
-
-for p_job in python_jobs:
-    link = p_job.find('a')['href']
-    print(p_job.text.strip())
-    print(f"Apply here: {link}\n")
+```python
+AttributeError: 'NoneType' object has no attribute 'text'
 ```
 
-The filtered results will only show links to job opportunities that include `python` in their title. You can use the same square-bracket notation to extract other HTML attributes as well. A common use case is to fetch the URL of a link, as you did above.
+This is a common error that you'll run into a lot when you're scraping information from the Internet. Inspect the HTML of an element in your `python_jobs` list. What do they look like? Where do you think the error is coming from?
+
+### Identifying Error Conditions
+
+When you look at a single element in `python_jobs`, you'll see that it consists only of the title element:
+
+```html
+<h2 class="title is-5">Senior Python Developer</h2>
+```
+
+When you filtered for job postings that contain the word `"python"` in their title, you picked out only the HTML elements that contain the title. As you can see, these elements don't contain the rest of the information about the job you're interested in.
+
+The error message you received earlier was related to this:
+
+```python
+AttributeError: 'NoneType' object has no attribute 'text'
+```
+
+Beautiful Soup returns `None` if it can't find an element given your specifications. Because each element inside of `python_jobs` only consists of one `<h2>` element that has the job title text, you won't be able to find the company name or the location of the job in there. Beautiful Soup still looks for them, can't find them, returns `None` instead, and your `print()` then fails when you try to extract the `.text` attribute from one of these `None` objects.
+
+The text that you're looking for is nested in sibling elements of the `<h2>` that you identified. Beautiful Soup can help you to select sibling, child, and parent elements of the HTML element you identified.
+
+### Accessing Parent Elements
+
+One way to get access to all the information you need is to use the `<h2>` elements that you identified and step up in the hierarchy of the DOM. Take another look at the HTML of a single job posting and find the `<h2>` element that contains the job title, as well as the closest parent element that contains all the information you're interested in:
+
+```html hl_lines="2 10"
+<div class="card">
+  <div class="card-content">
+    <div class="media">
+      <div class="media-left">
+        <figure class="image is-48x48">
+          <img src="https://files.realpython.com/media/real-python-logo-thumbnail.7f0db70c2ed2.jpg?__no_cf_polish=1" alt="Real Python Logo">
+        </figure>
+      </div>
+      <div class="media-content">
+        <h2 class="title is-5">Senior Python Developer</h2>
+        <h3 class="subtitle is-6 company">Payne, Roberts and Davis</h3>
+      </div>
+    </div>
+
+    <div class="content">
+      <p class="location">
+        Stewartbury, AA
+      </p>
+      <p class="is-small has-text-grey">
+        <time datetime="2021-04-08">2021-04-08</time>
+      </p>
+    </div>
+    <footer class="card-footer">
+        <a href="https://www.realpython.com" target="_blank" class="card-footer-item">Learn</a>
+        <a href="https://martin-martin.github.io/fake-jobs/jobs/senior-python-developer-0.html" target="_blank" class="card-footer-item">Apply</a>
+    </footer>
+  </div>
+</div>
+```
+
+The `<div>` element with the `card-content` class contains all the information that you want. It's a third-level parent of the `<h2>` title element that you found with your filter.
+
+With this information in mind, you can now use your filtered `<h2>` elements and fetch their parent elements instead, in order to get access to all the information about a job:
+
+```python
+python_jobs = results.find_all('h2', string=lambda text: 'python' in text.lower())
+python_job_elems = [title_elem.parent.parent.parent for title_elem in python_jobs]
+```
+
+In this example, you're using a list comprehension on each of the `<h2>` title elements that you identified through your lambda filter. In the list comprehension, you're selecting the parent of the parent of the parent element of each `<h2>` title element. You identified before by looking at the HTML of one job posting, that the third parent `<div>` with the class name `card-content` contains all the information you need.
+
+Now you can adapt the code in your `for` loop to iterate over the parent elements instead:
+
+```python
+for job_elem in python_job_elems:
+    # -- snip --
+```
+
+When you run your script again, you'll see that your code has again access to all the relevant information. This is because you're looping over the `<div class="card-content">` elements instead of just the title `<h2>` elements.
+
+Using the `.parent` attribute that each Beautiful Soup object comes with gives you an intuitive way of stepping through your DOM structure and addressing the elements you need. You can also access child elements and sibling elements in a similar manner. Read up on [navigating the tree](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#navigating-the-tree) for more information.
+
+### Extract Attributes From HTML Elements
+
+At this point, your Python script already scrapes the site and filters its HTML for relevant job postings. Well done! However, what's still missing is the link to apply for a job.
+
+While you were inspecting the page, you found that the link is at the bottom of each card in a button with the name _Apply_. If you handle the link element in the same way as you handled the other elements, you won't get the URL that you're interested in.
+
+The `.text` attribute strips away the entire link and leaves you only with the link text, _Apply_. Tags and attributes are not part of the visible content of an element. To get the URL that you want, you need to extract one of those attributes instead of discarding it.
+
+Look at the list of filtered results `python_job_elems` that you created above. The URL is contained in the `href` attribute of the second `<a>` tag at the bottom of your HTML:
+
+```html
+    <!-- snip -->
+    <footer class="card-footer">
+        <a href="https://www.realpython.com" target="_blank" class="card-footer-item">Learn</a>
+        <a href="https://martin-martin.github.io/fake-jobs/jobs/senior-python-developer-0.html" target="_blank" class="card-footer-item">Apply</a>
+    </footer>
+  </div>
+</div>
+```
+
+Start by fetching all the `<a>` elements in a job card. Then, extract the value of its `href` attribute using square-bracket notation:
+
+```python hl_lines="5"
+for p_job in python_job_elems:
+    links = p_job.find_all('a')
+    for link in links:
+        link_url = link['href']
+        print(f"Apply here: {link_url}\n")
+```
+
+In this code snippet, you first fetched all links from each of the filtered job postings. Then you extracted the `href` attribute, which contains the URL, and printed it to your console.
+
+<!-- TODO: Add task to get only the second link -->
+
+You can use the same square-bracket notation to extract other HTML attributes as well. A common use case is to fetch the URL of a link, as you did above.
 
 ## Building the Job Search Tool
 
-If you've written the code alongside this tutorial, then you can already run your script as-is. To wrap up your journey into web scraping, you could give the code a final makeover and create a command line interface app that looks for Software Developer jobs in any location you define. 
+If you've written the code alongside this tutorial, then you can already run your script as-is. To wrap up your journey into web scraping, you could give the code a 
+<!-- TODO: replace link -->
+final makeover and create a command line interface app that scrapes the [Fake Python Jobs](https://martin-martin.github.io/fake-jobs/) site for job postings and filters them by a keyword that you can define.
 
-You can check out a command line app version of the code you built in this tutorial at the link below:
+<!-- TODO: remove or update that CLI tool? -->
+<!-- You can check out a command line app version of the code you built in this tutorial at the link below:
 
-{% optin "beautiful-soup" %}
+{% optin "beautiful-soup" %} -->
 
 If you're interested in learning how to adapt your script as a command line interface, then check out [How to Build Command Line Interfaces in Python With argparse](https://realpython.com/command-line-interfaces-python-argparse/).
 
 ## Additional Practice
 
-Below is a list of other job boards. These linked pages also return their search results as static HTML responses. To keep practicing your new skills, you can revisit the web scraping process using any or all of the following sites:
+Below is a list of real-life job boards. These linked pages also return their search results as static HTML responses. To keep practicing your new skills, you can revisit the web scraping process using any or all of the following sites:
 
 - [PythonJobs](http://pythonjobs.github.io/)
 - [Remote(dot)co](https://remote.co/remote-jobs/developer/)
@@ -488,9 +579,9 @@ During your second attempt, you can also explore additional features of Beautifu
 
 ## Conclusion
 
-Beautiful Soup is packed with useful functionality to parse HTML data. It's a trusted and helpful companion for your web scraping adventures. Its [documentation](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) is comprehensive and relatively user-friendly to get started with. You'll find that Beautiful Soup will cater to most of your parsing needs, from [navigating](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#navigating-the-tree) to [advanced searching](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#searching-the-tree) through the results.
+Beautiful Soup is packed with useful functionality to parse HTML data. It's a trusted and helpful companion for your web scraping adventures. Its [documentation](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) is comprehensive and user-friendly to get started with. You'll find that Beautiful Soup will cater to most of your parsing needs, from [navigating](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#navigating-the-tree) to [advanced searching](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#searching-the-tree) through the results.
 
-In this tutorial, you've learned how to scrape data from the Web using Python, `requests`, and Beautiful Soup. You built a script that fetches job postings from the Internet and went through the full web scraping process from start to finish.
+In this tutorial, you learned how to scrape data from the Web using Python, `requests`, and Beautiful Soup. You built a script that fetches job postings from the Internet and went through the full web scraping process from start to finish.
 
 **You learned how to:**
 
