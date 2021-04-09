@@ -1,5 +1,5 @@
 from pathlib import Path
-from random import randint
+from random import randint, choice
 from faker import Faker
 from slugify import slugify
 from snippets import job_html, base_html, job_detail_html
@@ -24,9 +24,13 @@ word_list = ['job','professional','Python', 'no experience', 'curious', 'willing
         'detail-oriented', 'fast-growing', 'responsible tech', 'educational',
         'environmentally friendly', 'teamwork', 'asset', 'company']
 
+python_jobs = ["Python Developer", "Senior Python Developer", "Back-End Web Developer (Python, Django)",
+               "Python Internship", "Software Developer (Python)", "Python Programmer (Entry-Level)",
+               "Software Engineer (Python)"]
+
 for i in range(100):
     if i % 10 == 0:  # Create 10 jobs titled as Python jobs with software dev ipsum
-        job = "Python Developer"
+        job = choice(python_jobs)
         description = fake.paragraph(nb_sentences=randint(5, 10), ext_word_list=word_list)
     else:
         job = fake.job()

@@ -10,8 +10,11 @@ results = soup.find(id='ResultsContainer')
 # print(results.prettify())
 
 job_elems = results.find_all('div', class_='card-content')
+# python_jobs = results.find_all('p', string='Python Developer')
+python_jobs = job_elems.find_all('p', class_="title",
+                               string=lambda text: 'python' in text.lower())
 
-for job_elem in job_elems:
+for job_elem in python_jobs:
     # Each job_elem is a new BeautifulSoup object.
     # You can use the same methods on it as you did before.
     title_elem = job_elem.find('p', class_='title')

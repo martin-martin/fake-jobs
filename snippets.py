@@ -36,8 +36,8 @@ job_html = """<div class="column is-half">
         </figure>
       </div>
       <div class="media-content">
-        <p class="title is-5">{0}</p>
-        <p class="subtitle is-6 company">{1}</p>
+        <h2 class="title is-5">{0}</h2>
+        <h3 class="subtitle is-6 company">{1}</h3>
       </div>
     </div>
 
